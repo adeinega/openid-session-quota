@@ -1,0 +1,1 @@
+This is a draft of a new extension for OpenID Connect to supports quotas for the number of active sessions at the RP side.
