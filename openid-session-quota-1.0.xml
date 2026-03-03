@@ -22,13 +22,10 @@
 <middle>
 
 <section anchor="introduction"><name>Introduction</name>
-<t>OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. It enables Clients to verify the
-identity of the End-User based on the authentication performed by an Authorization Server, as well as to obtain basic
-profile information about the End-User in an interoperable and REST-like manner. OpenID Connect Session Management 1.0
-describes how to manage sessions for OpenID Connect, including when to log out the End-User.
-This specification complements both specifications by enabling the setting of limits on the number of concurrent
-sessions for a user or for all users in total by a client to an OP. The client includes this information in the
-authentication request.</t>
+<t>OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. OpenID Connect Session Management 1.0
+describes how to manage sessions for OpenID Connect, including when to log out the End-User. This specification
+complements both specifications by allowing clients to set of limits on the number of concurrent sessions for a user
+and/or all users. This information is communicated to the OP through the authentication request sent by the client.</t>
 
 <section anchor="requirements-notation-and-conventions"><name>Requirements Notation and Conventions</name>
 <t>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
@@ -39,14 +36,14 @@ MUST NOT be used as part of the value.</t>
 </section>
 
 <section anchor="terminology"><name>Terminology</name>
-<t>This specification uses the terms &quot;Authorization Endpoint&quot;, &quot;Authorization Server&quot;, &quot;Client&quot; and &quot;Client Identifier&quot;
-defined by OAuth 2.0 [RFC6749], and the terms defined by OpenID Connect Core 1.0 <xref target="OpenID.Core"></xref> and OpenID Connect
-Session Management 1.0 <xref target="OpenID.Session"></xref>.</t>
+<t>This specification uses the terms &quot;Authorization Endpoint&quot;, &quot;Authorization Server&quot; and &quot;Client&quot; defined by
+OAuth 2.0 [RFC6749], and the terms defined by OpenID Connect Core 1.0 <xref target="OpenID.Core"></xref> and
+OpenID Connect Session Management 1.0 <xref target="OpenID.Session"></xref>.</t>
 </section>
 
 <section anchor="overview"><name>Overview</name>
-<t>A client (RP) prepares an <tt>Authentication Request</tt> containing the desired request parameters and includes one, or two
-additional parameters (at the same time) related quotas</t>
+<t>An RP (client) prepares an <tt>Authentication Request</tt> containing the desired request parameters and includes one, or
+combines two additional parameters (at the same time) related to End-User session quotas in it</t>
 
 <dl spacing="compact">
 <dt><tt>quota_user</tt> (number):</dt>
@@ -54,11 +51,11 @@ additional parameters (at the same time) related quotas</t>
 <dt><tt>quota_global</tt> (number):</dt>
 <dd>The maximum number of concurrent sessions of all End-Users.</dd>
 </dl>
-<t>After authentication of an End-User, the OP compares the values provided in the requested parameters with its existing
-information. The OP MAY return <tt>Authentication Error Response</tt> to an RP if any of values in the requested parameters
-exceed their respective quotas. Alternatively, the OP can decide to go a different route, for instance, invalidate
-other End-User sessions for this RP. These, the specific actions taken are at the OS's discretion, based on its
-configuration, policies, and preferences.</t>
+<t>After authentication an End-User, an OP considers the values provided in <tt>quota_user</tt> and <tt>quota_global</tt>
+parameters to determine its next actions, based on whether either requested value exceeds its respective quotas. The
+OP MAY return <tt>Authentication Error Response</tt> to an RP using <tt>quota_exceeded</tt> as the error code. Or, alternatively,
+the OP can decide to take a different route, for instance, invalidate other End-User sessions for this RP. The
+specific actions taken are at the OP's discretion, based on its configuration, policies, and preferences.</t>
 </section>
 
 <section anchor="openid-provider-discovery-metadata"><name>OpenID Provider Discovery Metadata</name>
@@ -78,7 +75,8 @@ are supported by an OP.</t>
 
 <section anchor="security-considerations"><name>Security Considerations</name>
 <t>The authentication requests MUST be passed using JAR <xref target="RFC9101"></xref>, PAR <xref target="RFC9126"></xref>, or alternatively by value as
-described in section 6.1 of <xref target="OpenID.Core"></xref> for the purpose of protecting its integrity.</t>
+described in section 6.1 of <xref target="OpenID.Core"></xref> for the purpose of protecting its integrity. This specification applies to
+the confidential clients only.</t>
 </section>
 
 <section anchor="iana-considerations"><name>IANA Considerations</name>

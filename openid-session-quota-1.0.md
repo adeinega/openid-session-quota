@@ -27,13 +27,10 @@ Draft of OpenID Connect Session Quota.
 
 # Introduction
 
-OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. It enables Clients to verify the
-identity of the End-User based on the authentication performed by an Authorization Server, as well as to obtain basic
-profile information about the End-User in an interoperable and REST-like manner. OpenID Connect Session Management 1.0
-describes how to manage sessions for OpenID Connect, including when to log out the End-User.
-This specification complements both specifications by enabling the setting of limits on the number of concurrent
-sessions for a user or for all users in total by a client to an OP. The client includes this information in the
-authentication request.
+OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. OpenID Connect Session Management 1.0
+describes how to manage sessions for OpenID Connect, including when to log out the End-User. This specification
+complements both specifications by allowing clients to set of limits on the number of concurrent sessions for a user
+and/or all users. This information is communicated to the OP through the authentication request sent by the client.
 
 ## Requirements Notation and Conventions
 
@@ -45,14 +42,14 @@ MUST NOT be used as part of the value.
 
 ## Terminology
 
-This specification uses the terms "Authorization Endpoint", "Authorization Server", "Client" and "Client Identifier"
-defined by OAuth 2.0 [RFC6749], and the terms defined by OpenID Connect Core 1.0 [@!OpenID.Core] and OpenID Connect
-Session Management 1.0 [@!OpenID.Session].
+This specification uses the terms "Authorization Endpoint", "Authorization Server" and "Client" defined by
+OAuth 2.0 [RFC6749], and the terms defined by OpenID Connect Core 1.0 [@!OpenID.Core] and
+OpenID Connect Session Management 1.0 [@!OpenID.Session].
 
 ## Overview
 
-A client (RP) prepares an `Authentication Request` containing the desired request parameters and includes one, or two
-additional parameters (at the same time) related quotas
+An RP (client) prepares an `Authentication Request` containing the desired request parameters and includes one, or
+combines two additional parameters (at the same time) related to End-User session quotas in it
 
 `quota_user` (number):
 :  The maximum number of concurrent sessions per the same End-User.
@@ -60,11 +57,11 @@ additional parameters (at the same time) related quotas
 `quota_global` (number):
 :  The maximum number of concurrent sessions of all End-Users.
 
-After authentication of an End-User, the OP compares the values provided in the requested parameters with its existing
-information. The OP MAY return `Authentication Error Response` to an RP if any of values in the requested parameters
-exceed their respective quotas. Alternatively, the OP can decide to go a different route, for instance, invalidate
-other End-User sessions for this RP. These, the specific actions taken are at the OS's discretion, based on its
-configuration, policies, and preferences.
+After authentication an End-User, an OP considers the values provided in `quota_user` and `quota_global`
+parameters to determine its next actions, based on whether either requested value exceeds its respective quotas. The
+OP MAY return `Authentication Error Response` to an RP using `quota_exceeded` as the error code. Or, alternatively,
+the OP can decide to take a different route, for instance, invalidate other End-User sessions for this RP. The
+specific actions taken are at the OP's discretion, based on its configuration, policies, and preferences.
 
 ## OpenID Provider Discovery Metadata
 
@@ -81,7 +78,8 @@ TBC.
 # Security Considerations
 
 The authentication requests MUST be passed using JAR [@!RFC9101], PAR [@!RFC9126], or alternatively by value as
-described in section 6.1 of [@!OpenID.Core] for the purpose of protecting its integrity.
+described in section 6.1 of [@!OpenID.Core] for the purpose of protecting its integrity. This specification applies to
+the confidential clients only.
 
 # IANA Considerations
 
