@@ -22,35 +22,47 @@
 <middle>
 
 <section anchor="introduction"><name>Introduction</name>
-<t>OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. It enables Clients to verify the identity of the End-User based on the authentication performed by an Authorization Server, as well as to obtain basic profile information about the End-User in an interoperable and REST-like manner.
-OpenID Connect Session Management 1.0 describes how to manage sessions for OpenID Connect, including when to log out the End-User.
-This specification complements both specifications by enabling the setting of limits on the number of concurrent sessions for a user or for all users in total by a client to an OP. The client includes this information in the authentication request.</t>
+<t>OpenID Connect 1.0 is a simple identity layer on top of the OAuth 2.0 protocol. It enables Clients to verify the
+identity of the End-User based on the authentication performed by an Authorization Server, as well as to obtain basic
+profile information about the End-User in an interoperable and REST-like manner.  OpenID Connect Session Management 1.0
+describes how to manage sessions for OpenID Connect, including when to log out the End-User.
+This specification complements both specifications by enabling the setting of limits on the number of concurrent
+sessions for a user or for all users in total by a client to an OP. The client includes this information in the
+authentication request.</t>
 
 <section anchor="requirements-notation-and-conventions"><name>Requirements Notation and Conventions</name>
-<t>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"></xref> <xref target="RFC8174"></xref> when, and only when, they appear in all capitals, as shown here.
-Throughout this document, values are quoted to indicate that they are to be taken literally.
-When using these values in protocol messages, the quotes MUST NOT be used as part of the value.</t>
+<t>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
+&quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"></xref>
+<xref target="RFC8174"></xref> when, and only when, they appear in all capitals, as shown here.  Throughout this document, values are
+quoted to indicate that they are to be taken literally. When using these values in protocol messages, the quotes
+MUST NOT be used as part of the value.</t>
 </section>
 
 <section anchor="terminology"><name>Terminology</name>
-<t>This specification uses the terms &quot;Authorization Endpoint&quot;, &quot;Authorization Server&quot;, &quot;Client&quot;, and &quot;Client Identifier&quot; defined by OAuth 2.0 [RFC6749], the term &quot;User Agent&quot; defined by RFC 7230 [RFC7230], and the terms defined by OpenID Connect Core 1.0 [OpenID.Core].</t>
+<t>This specification uses the terms &quot;Authorization Endpoint&quot;, &quot;Authorization Server&quot;, &quot;Client&quot;, and &quot;Client Identifier&quot;
+defined by OAuth 2.0 [RFC6749], the term &quot;User Agent&quot; defined by RFC 7230 [RFC7230], and the terms defined by
+OpenID Connect Core 1.0 [OpenID.Core].</t>
 </section>
 
 <section anchor="overview"><name>Overview</name>
 <t>A client (RP) prepares an <tt>Authentication Request</tt> with either one, or two additional parameters at the same time:</t>
 
 <dl spacing="compact">
-<dt><tt>user</tt> (number):</dt>
-<dd>the max number of concurrent sessions per the same End-User.</dd>
-<dt><tt>global</tt> (number):</dt>
-<dd>the max number of concurrent sessions for all End-Users.</dd>
+<dt><tt>quota_user</tt> (number):</dt>
+<dd>The maximum number of concurrent sessions per the same End-User.</dd>
+<dt><tt>quota_global</tt> (number):</dt>
+<dd>The maximum number of concurrent sessions of all End-Users.</dd>
 </dl>
-<t>After authentication the End-User, an OP MUST return <tt>Authentication Error Response</tt> if one of the values specified in these parameters exceed their respective quota.
-The error code MUST be to be set to <tt>request_quota_reached</tt>, the <tt>error_description</tt> parameter MAY include additional information.</t>
+<t>After authentication of an End-User, the OP compares the values provided in the requested parameters with its existing
+information. The OP MAY return <tt>Authentication Error Response</tt> to an RP if any of values in the requested parameters
+exceed their respective quotas. Alternatively, the OP can decide to go a different route, for instance, invalidate
+other End-User sessions for this RP. These, the specific actions taken are at the OS's discretion, based on its
+configuration, policies, and preferences.</t>
 </section>
 
 <section anchor="openid-provider-discovery-metadata"><name>OpenID Provider Discovery Metadata</name>
-<t>The <tt>request_quota_types_supported</tt> parameter MUST be included in the Server's discovery responses when Session Quotas are supported by an OP</t>
+<t>The <tt>request_quota_types_supported</tt> parameter MUST be included in the Server's discovery responses when Session Quota
+s are supported by an OP</t>
 
 <dl spacing="compact">
 <dt><tt>request_quota_types_supported</tt> (array of strings):</dt>
@@ -64,7 +76,8 @@ The error code MUST be to be set to <tt>request_quota_reached</tt>, the <tt>erro
 </section>
 
 <section anchor="security-considerations"><name>Security Considerations</name>
-<t>The authentication requests MUST be passed using JAR [RFC9101], PAR [RFC9126], or alternatively by <eref target="https://openid.net/specs/openid-connect-core-1_0.html#RequestObject">value</eref> for the purpose of protecting its integrity and confidentiality.</t>
+<t>The authentication requests MUST be passed using JAR <xref target="RFC9101"></xref>, PAR <xref target="RFC9126"></xref>, or alternatively by value as
+described in section 6.1 of <xref target="OpenID.Core"></xref> for the purpose of protecting its integrity.</t>
 </section>
 
 <section anchor="iana-considerations"><name>IANA Considerations</name>
@@ -75,11 +88,50 @@ The error code MUST be to be set to <tt>request_quota_reached</tt>, the <tt>erro
 
 <back>
 <references><name>Normative References</name>
+<reference anchor="OpenID.Core" target="https://openid.net/specs/openid-connect-core-1_0.html">
+  <front>
+    <title>OpenID Connect Core 1.0 incorporating errata set 2</title>
+    <author fullname="Nat Sakimura" initials="N." surname="Sakimura">
+      <organization abbrev="NAT.Consulting (was at NRI)">NAT.Consulting</organization>
+    </author>
+    <author fullname="John Bradley" initials="J." surname="Bradley">
+      <organization abbrev="Yubico (was at Ping Identity)">Yubico</organization>
+    </author>
+    <author fullname="Michael B. Jones" initials="M.B." surname="Jones">
+      <organization abbrev="Self-Issued Consulting (was at Microsoft)">Self-Issued Consulting</organization>
+    </author>
+    <author fullname="Breno de Medeiros" initials="B." surname="de Medeiros">
+      <organization abbrev="Google">Google</organization>
+    </author>
+    <author fullname="Chuck Mortimore" initials="C." surname="Mortimore">
+      <organization abbrev="Disney (was at Salesforce)">Disney</organization>
+    </author>
+    <date year="2023" month="December" day="15"></date>
+  </front>
+</reference>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
 <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9101.xml"/>
+<xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9126.xml"/>
 </references>
 
 <section anchor="use-cases"><name>Use Cases</name>
+
+<section anchor="use-case-1"><name>Use Case 1</name>
+<t>An administrator receives a requirement to enforce quotas for one of the enterprise applications. Instead of
+implementing quota logic directly within the application, he wants to completely delegate this to an OP, which is
+already in use by all applications in the organization. He manages hundreds of such applications and requirements tend
+to change frequently over short periods of time. Because all of this, it's hard to justify implementing and maintaining
+such quota logic separately within each individual application rather than centrally at the OP level. Additionally,
+some of the applications are provided by third party software vendors, which means, their internal implementation
+aspects cannot be modified to support custom logic that easily and fast.</t>
+</section>
+
+<section anchor="use-case-2"><name>Use Case 2</name>
+<t>A Wi-Fi router manufacturer wants to enforce an administrative quotas to one concurrent session for its management
+console which is already uses OpenID Connect for authentification. However, due to the hardware restrictions the device
+does not really want to store, nor track any additional data to store, and keep track of sessions.</t>
+</section>
 </section>
 
 <section anchor="acknowledgments"><name>Acknowledgments</name>

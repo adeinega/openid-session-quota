@@ -26,9 +26,11 @@ Table of Contents
    4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   3
    5.  Normative References  . . . . . . . . . . . . . . . . . . . .   3
    Appendix A.  Use Cases  . . . . . . . . . . . . . . . . . . . . .   3
-   Appendix B.  Acknowledgments  . . . . . . . . . . . . . . . . . .   3
-   Appendix C.  Document History . . . . . . . . . . . . . . . . . .   3
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     A.1.  Use Case 1  . . . . . . . . . . . . . . . . . . . . . . .   4
+     A.2.  Use Case 2  . . . . . . . . . . . . . . . . . . . . . . .   4
+   Appendix B.  Acknowledgments  . . . . . . . . . . . . . . . . . .   4
+   Appendix C.  Document History . . . . . . . . . . . . . . . . . .   4
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   4
 
 1.  Introduction
 
@@ -43,8 +45,6 @@ Table of Contents
    the number of concurrent sessions for a user or for all users in
    total by a client to an OP.  The client includes this information in
    the authentication request.
-
-
 
 
 
@@ -82,29 +82,29 @@ Deinega                      Standards Track                    [Page 1]
    A client (RP) prepares an Authentication Request with either one, or
    two additional parameters at the same time:
 
-   user (number):  the max number of concurrent sessions per the same
-      End-User.
-   global (number):  the max number of concurrent sessions for all End-
-      Users.
+   quota_user (number):  The maximum number of concurrent sessions per
+      the same End-User.
+   quota_global (number):  The maximum number of concurrent sessions of
+      all End-Users.
 
-   After authentication the End-User, an OP MUST return Authentication
-   Error Response if one of the values specified in these parameters
-   exceed their respective quota.  The error code MUST be to be set to
-   request_quota_reached, the error_description parameter MAY include
-   additional information.
+   After authentication of an End-User, the OP compares the values
+   provided in the requested parameters with its existing information.
+   The OP MAY return Authentication Error Response to an RP if any of
+   values in the requested parameters exceed their respective quotas.
+   Alternatively, the OP can decide to go a different route, for
+   instance, invalidate other End-User sessions for this RP.  These, the
+   specific actions taken are at the OS's discretion, based on its
+   configuration, policies, and preferences.
 
 1.4.  OpenID Provider Discovery Metadata
 
    The request_quota_types_supported parameter MUST be included in the
-   Server's discovery responses when Session Quotas are supported by an
+   Server's discovery responses when Session Quota s are supported by an
    OP
 
    request_quota_types_supported (array of strings):  A list of the
       quota mechanisms supported by the OP, possible values are user and
       global.
-
-
-
 
 
 
@@ -121,15 +121,20 @@ Deinega                      Standards Track                    [Page 2]
 3.  Security Considerations
 
    The authentication requests MUST be passed using JAR [RFC9101], PAR
-   [RFC9126], or alternatively by value (https://openid.net/specs/
-   openid-connect-core-1_0.html#RequestObject) for the purpose of
-   protecting its integrity and confidentiality.
+   [RFC9126], or alternatively by value as described in section 6.1 of
+   [OpenID.Core] for the purpose of protecting its integrity.
 
 4.  IANA Considerations
 
    No new registrations.
 
 5.  Normative References
+
+   [OpenID.Core]
+              Sakimura, N., Bradley, J., Jones, M.B., de Medeiros, B.,
+              and C. Mortimore, "OpenID Connect Core 1.0 incorporating
+              errata set 2", 15 December 2023,
+              <https://openid.net/specs/openid-connect-core-1_0.html>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -140,7 +145,53 @@ Deinega                      Standards Track                    [Page 2]
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
+   [RFC9101]  Sakimura, N., Bradley, J., and M. Jones, "The OAuth 2.0
+              Authorization Framework: JWT-Secured Authorization Request
+              (JAR)", RFC 9101, DOI 10.17487/RFC9101, August 2021,
+              <https://www.rfc-editor.org/info/rfc9101>.
+
+   [RFC9126]  Lodderstedt, T., Campbell, B., Sakimura, N., Tonge, D.,
+              and F. Skokan, "OAuth 2.0 Pushed Authorization Requests",
+              RFC 9126, DOI 10.17487/RFC9126, September 2021,
+              <https://www.rfc-editor.org/info/rfc9126>.
+
 Appendix A.  Use Cases
+
+
+
+
+
+
+
+
+
+Deinega                      Standards Track                    [Page 3]
+
+                          openid-session-quota                March 2026
+
+
+A.1.  Use Case 1
+
+   An administrator receives a requirement to enforce quotas for one of
+   the enterprise applications.  Instead of implementing quota logic
+   directly within the application, he wants to completely delegate this
+   to an OP, which is already in use by all applications in the
+   organization.  He manages hundreds of such applications and
+   requirements tend to change frequently over short periods of time.
+   Because all of this, it's hard to justify implementing and
+   maintaining such quota logic separately within each individual
+   application rather than centrally at the OP level.  Additionally,
+   some of the applications are provided by third party software
+   vendors, which means, their internal implementation aspects cannot be
+   modified to support custom logic that easily and fast.
+
+A.2.  Use Case 2
+
+   A Wi-Fi router manufacturer wants to enforce an administrative quotas
+   to one concurrent session for its management console which is already
+   uses OpenID Connect for authentification.  However, due to the
+   hardware restrictions the device does not really want to store, nor
+   track any additional data to store, and keep track of sessions.
 
 Appendix B.  Acknowledgments
 
@@ -165,4 +216,9 @@ Author's Address
 
 
 
-Deinega                      Standards Track                    [Page 3]
+
+
+
+
+
+Deinega                      Standards Track                    [Page 4]
